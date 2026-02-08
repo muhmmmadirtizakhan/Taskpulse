@@ -15,8 +15,7 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.static(__dirname));
-
+app.use(express.static(__dirname)); 
 // Routes
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'landingpage.html'));
@@ -767,13 +766,13 @@ app.get('/api/health', (req, res) => {
 });
 
 // ==================== START SERVER ====================
-app.listen(PORT, '0.0.0.0', () => {
-    console.log(`🚀 Server running on port: ${PORT}`);
-    console.log(`🌐 Railway URL: https://web-production-7a642.up.railway.app`);
-    console.log(`👉 App: https://web-production-7a642.up.railway.app/app`);
-    console.log(`📌 Supabase URL: ${supabaseUrl}`);
-    console.log(`\n✅ TaskPulse deployed successfully on Railway!`);
-    console.log(`✅ C++ Activity Manager integrated`);
-    console.log(`✅ Supabase Database connected`);
-    console.log(`✅ All features operational`);
+// Start server
+const server = app.listen(PORT || 3000, '0.0.0.0', () => {
+    console.log(`✅ Server running on port: ${PORT || 3000}`);
+    console.log(`✅ Railway: web-production-7a642.up.railway.app`);
+});
+
+// Handle errors
+server.on('error', (error) => {
+    console.error('❌ Server error:', error);
 });
