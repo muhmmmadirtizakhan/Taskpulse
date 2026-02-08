@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="website icon" type="JPEG" href="fv.JPEG">
+    <title>TaskPulse | Activity Manager</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="userinterface.css">
+    
+    <!-- Firebase Check Script -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBX3OonJ08IK7egsDJv2TuZfhveTSV7NmA",
+            authDomain: "taskpulse-41edb.firebaseapp.com",
+            projectId: "taskpulse-41edb",
+            storageBucket: "taskpulse-41edb.firebasestorage.app",
+            messagingSenderId: "122473516709",
+            appId: "1:122473516709:web:ca6bd67fa004fe483b074c",
+            measurementId: "G-P18NQ6S57S"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // 1. Auth State Check
+        onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                window.location.replace("landingpage.html"); 
+            } else {
+                const userName = user.displayName || user.email.split('@')[0] || "User";
+                document.querySelector('.user-info h4').textContent = userName;
+                document.querySelector('.user-info p').textContent = "Logged In User";
+                
+                window.currentUser = {
+                    uid: user.uid,
+                    name: userName,
+                    email: user.email
+                };
+            }
+        });
+
+        // 2. Logout Button Click Logic
+        const logoutBtn = document.querySelector('.logout-btn');
+        if(logoutBtn) {
+            logoutBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                signOut(auth).then(() => {
+                    console.log("Logged out successfully");
+                    window.location.replace("landingpage.html");
+                }).catch((error) => {
+                    console.error("Logout Error:", error);
+                });
+            });
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <!-- Logo -->
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <h2>Task<span>Pulse</span></h2>
+            </div>
+
+            <!-- User Section -->
+            <div class="user-section">
+                <div class="avatar">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <div class="user-info">
+                    <h4>Loading...</h4>
+                    <p>Please wait</p>
+                </div>
+            </div>
+
+            <!-- Navigation Menu -->
+            <nav class="nav-menu">
+                <a href="#" class="nav-item active" data-section="add">
+                    <div class="nav-icon">
+                        <i class="fas fa-plus-circle"></i>
+                    </div>
+                    <span>Add Activity</span>
+                </a>
+
+                <a href="#" class="nav-item" data-section="search">
+                    <div class="nav-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <span>Search Activity</span>
+                </a>
+
+                <a href="#" class="nav-item" data-section="update">
+                    <div class="nav-icon">
+                        <i class="fas fa-edit"></i>
+                    </div>
+                    <span>Update Activity</span>
+                </a>
+
+                <a href="#" class="nav-item" data-section="delete">
+                    <div class="nav-icon">
+                        <i class="fas fa-trash"></i>
+                    </div>
+                    <span>Delete Activity</span>
+                </a>
+
+                <a href="#" class="nav-item" data-section="undo">
+                    <div class="nav-icon">
+                        <i class="fas fa-undo"></i>
+                    </div>
+                    <span>Undo Activity</span>
+                </a>
+
+                <a href="#" class="nav-item" data-section="redo">
+                    <div class="nav-icon">
+                        <i class="fas fa-redo"></i>
+                    </div>
+                    <span>Redo Activity</span>
+                </a>
+
+                <a href="#" class="nav-item" data-section="activities">
+                    <div class="nav-icon">
+                        <i class="fas fa-tasks"></i>
+                    </div>
+                    <span>Your Activities</span>
+                </a>
+            </nav>
+
+            <!-- Theme Toggle -->
+            <div class="theme-toggle">
+                <i class="fas fa-moon"></i>
+                <div class="toggle-switch">
+                    <input type="checkbox" id="themeSwitch">
+                    <label for="themeSwitch" class="toggle-slider"></label>
+                </div>
+                <i class="fas fa-sun"></i>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Button -->
+        <div class="mobile-menu-btn">
+            <i class="fas fa-bars"></i>
+        </div>
+
+        <!-- Mobile Menu Overlay -->
+        <div class="mobile-menu-overlay">
+            <div class="mobile-menu">
+                <div class="mobile-menu-header">
+                    <div class="logo">
+                        <div class="logo-icon">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <h2>Task<span>Pulse</span></h2>
+                    </div>
+                </div>
+                
+                <!-- Mobile User Section -->
+                <div class="mobile-user-section">
+                    <div class="avatar">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                    <div class="user-info">
+                        <h4>Loading...</h4>
+                        <p>Please wait</p>
+                    </div>
+                </div>
+
+                <!-- Mobile Navigation Menu -->
+                <nav class="mobile-nav-menu">
+                    <a href="#" class="nav-item active" data-section="add">
+                        <div class="nav-icon">
+                            <i class="fas fa-plus-circle"></i>
+                        </div>
+                        <span>Add Activity</span>
+                    </a>
+
+                    <a href="#" class="nav-item" data-section="search">
+                        <div class="nav-icon">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <span>Search Activity</span>
+                    </a>
+
+                    <a href="#" class="nav-item" data-section="update">
+                        <div class="nav-icon">
+                            <i class="fas fa-edit"></i>
+                        </div>
+                        <span>Update Activity</span>
+                    </a>
+
+                    <a href="#" class="nav-item" data-section="delete">
+                        <div class="nav-icon">
+                            <i class="fas fa-trash"></i>
+                        </div>
+                        <span>Delete Activity</span>
+                    </a>
+
+                    <a href="#" class="nav-item" data-section="undo">
+                        <div class="nav-icon">
+                            <i class="fas fa-undo"></i>
+                        </div>
+                        <span>Undo Activity</span>
+                    </a>
+
+                    <a href="#" class="nav-item" data-section="redo">
+                        <div class="nav-icon">
+                            <i class="fas fa-redo"></i>
+                        </div>
+                        <span>Redo Activity</span>
+                    </a>
+
+                    <a href="#" class="nav-item" data-section="activities">
+                        <div class="nav-icon">
+                            <i class="fas fa-tasks"></i>
+                        </div>
+                        <span>Your Activities</span>
+                    </a>
+                </nav>
+
+                <!-- Mobile Theme Toggle -->
+                <div class="theme-toggle">
+                    <i class="fas fa-moon"></i>
+                    <div class="toggle-switch">
+                        <input type="checkbox" id="mobileThemeSwitch">
+                        <label for="mobileThemeSwitch" class="toggle-slider"></label>
+                    </div>
+                    <i class="fas fa-sun"></i>
+                </div>
+                
+                <div class="mobile-menu-close">
+                    <i class="fas fa-times"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-left">
+                    <h1 id="pageTitle">Add New Activity</h1>
+                    <p id="pageDesc">Add new activities with category, priority, status and score</p>
+                </div>
+                <div class="header-right">
+                    <div class="time-display">
+                        <i class="fas fa-clock"></i>
+                        <span id="currentTime">--:-- --</span>
+                    </div>
+                    <button class="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Logout
+                    </button>
+                </div>
+            </header>
+
+            <!-- Action Cards Section -->
+            <div class="action-section">
+                <!-- Add Activity Card -->
+                <div class="action-card active" id="addCard">
+                    <div class="card-header">
+                        <i class="fas fa-plus-circle"></i>
+                        <h3>Add New Activity</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label>
+                                <i class="fas fa-heading"></i>
+                                Activity Title
+                            </label>
+                            <input type="text" id="addTitle" placeholder="Enter activity title...">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>
+                                <i class="fas fa-align-left"></i>
+                                Description
+                            </label>
+                            <textarea id="addDescription" rows="3" placeholder="Describe your activity..."></textarea>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>
+                                    <i class="fas fa-tag"></i>
+                                    Category
+                                </label>
+                                <select id="addCategory">
+                                    <option value="work">Work</option>
+                                    <option value="study">Study</option>
+                                    <option value="personal">Personal</option>
+                                    <option value="project">Project</option>
+                                    <option value="sports">Sports</option>
+                                    <option value="gynasim">gynasim</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>
+                                    <i class="fas fa-flag"></i>
+                                    Priority
+                                </label>
+                                <select id="addPriority">
+                                    <option value="low">Low</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="high">High</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>
+                                    <i class="fas fa-check-circle"></i>
+                                    Status
+                                </label>
+                                <select id="addStatus">
+                                    <option value="incomplete">Incomplete</option>
+                                    <option value="complete">Complete</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>
+                                    <i class="fas fa-star"></i>
+                                    Score
+                                </label>
+                                <select id="addScore">
+                                    <option value="0">0 points</option>
+                                    <option value="1">1 point</option>
+                                    <option value="2">2 points</option>
+                                    <option value="3">3 points</option>
+                                    <option value="4">4 points</option>
+                                    <option value="5">5 points</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <button class="btn primary" id="addBtn">
+                            <i class="fas fa-plus"></i>
+                            Add Activity
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Search Activity Card -->
+                <div class="action-card" id="searchCard">
+                    <div class="card-header">
+                        <i class="fas fa-search"></i>
+                        <h3>Search Activities</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="searchInput" placeholder="Search by title, description or category...">
+                            <button class="btn primary" id="searchBtn">
+                                <i class="fas fa-search"></i>
+                                Search
+                            </button>
+                        </div>
+                        
+                        <div class="search-results" id="searchResults">
+                            <p class="placeholder-text">
+                                <i class="fas fa-search"></i>
+                                Enter search term to find activities
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Update Activity Card -->
+                <div class="action-card" id="updateCard">
+                    <div class="card-header">
+                        <i class="fas fa-edit"></i>
+                        <h3>Update Activity</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label>
+                                <i class="fas fa-hashtag"></i>
+                                Activity ID
+                            </label>
+                            <div class="input-with-btn">
+                                <input type="text" id="updateId" placeholder="Enter activity ID">
+                                <button class="btn secondary" id="findBtn">
+                                    <i class="fas fa-search"></i>
+                                    Find
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>
+                                <i class="fas fa-heading"></i>
+                                New Title
+                            </label>
+                            <input type="text" id="updateTitle" placeholder="Enter new title">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>
+                                <i class="fas fa-align-left"></i>
+                                New Description
+                            </label>
+                            <textarea id="updateDescription" rows="3" placeholder="Enter new description"></textarea>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>
+                                    <i class="fas fa-tag"></i>
+                                    New Category
+                                </label>
+                                <select id="updateCategory">
+                                    <option value="work">Work</option>
+                                    <option value="study">Study</option>
+                                    <option value="personal">Personal</option>
+                                    <option value="project">Project</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>
+                                    <i class="fas fa-flag"></i>
+                                    New Priority
+                                </label>
+                                <select id="updatePriority">
+                                    <option value="low">Low</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="high">High</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>
+                                    <i class="fas fa-check-circle"></i>
+                                    New Status
+                                </label>
+                                <select id="updateStatus">
+                                    <option value="incomplete">Incomplete</option>
+                                    <option value="complete">Complete</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>
+                                    <i class="fas fa-star"></i>
+                                    New Score
+                                </label>
+                                <select id="updateScore">
+                                    <option value="0">0 points</option>
+                                    <option value="1">1 point</option>
+                                    <option value="2">2 points</option>
+                                    <option value="3">3 points</option>
+                                    <option value="4">4 points</option>
+                                    <option value="5">5 points</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <button class="btn warning" id="updateBtn">
+                            <i class="fas fa-save"></i>
+                            Update Activity
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Delete Activity Card -->
+                <div class="action-card" id="deleteCard">
+                    <div class="card-header">
+                        <i class="fas fa-trash"></i>
+                        <h3>Delete Activity</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="warning-box">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <p>This will permanently delete the activity</p>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>
+                                <i class="fas fa-hashtag"></i>
+                                Activity ID
+                            </label>
+                            <input type="text" id="deleteId" placeholder="Enter activity ID to delete...">
+                        </div>
+
+                        <button class="btn danger" id="deleteBtn">
+                            <i class="fas fa-trash"></i>
+                            Delete Activity
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Undo Activity Card -->
+                <div class="action-card" id="undoCard">
+                    <div class="card-header">
+                        <i class="fas fa-undo"></i>
+                        <h3>Undo Activity</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="info-box" id="undoInfoBox">
+                            <i class="fas fa-history"></i>
+                            <div>
+                                <h4 id="undoTitle">No actions to undo</h4>
+                                <p id="undoDesc">Perform some actions first to enable undo</p>
+                                <!-- 🔥 PERMANENT DELETE BUTTON ADDED HERE -->
+                                <button class="btn danger permanent-delete-btn" id="permanentDeleteBtn" style="display: none; margin-top: 10px;">
+                                    <i class="fas fa-fire"></i>
+                                    Delete Permanently
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <i class="fas fa-clock"></i>
+                                <h3 id="undoCount">0</h3>
+                                <p>Undo Stack</p>
+                            </div>
+                            <div class="stat-card">
+                                <i class="fas fa-layer-group"></i>
+                                <h3 id="totalActions">0</h3>
+                                <p>Total Actions</p>
+                            </div>
+                        </div>
+
+                        <button class="btn secondary" id="undoBtn" disabled>
+                            <i class="fas fa-undo"></i>
+                            Nothing to Undo
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Redo Activity Card -->
+                <div class="action-card" id="redoCard">
+                    <div class="card-header">
+                        <i class="fas fa-redo"></i>
+                        <h3>Redo Activity</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="info-box">
+                            <i class="fas fa-redo-alt"></i>
+                            <div>
+                                <h4 id="redoTitle">No actions to redo</h4>
+                                <p id="redoDesc">Undo some actions first to enable redo</p>
+                            </div>
+                        </div>
+
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <i class="fas fa-redo"></i>
+                                <h3 id="redoCount">0</h3>
+                                <p>Redo Available</p>
+                            </div>
+                            <div class="stat-card">
+                                <i class="fas fa-exchange-alt"></i>
+                                <h3 id="redoStack">0</h3>
+                                <p>Redo Stack</p>
+                            </div>
+                        </div>
+
+                        <button class="btn secondary" id="redoBtn" disabled>
+                            <i class="fas fa-redo"></i>
+                            Nothing to Redo
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Your Activities Card -->
+                <div class="action-card" id="activitiesCard">
+                    <div class="card-header">
+                        <i class="fas fa-tasks"></i>
+                        <h3>Your Activities</h3>
+                        <div class="activities-stats">
+                            <span class="stat-badge" id="totalActivities">0</span>
+                            <span class="stat-badge complete" id="completedActivities">0</span>
+                            <span class="stat-badge score" id="totalScore">0</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="activities-table">
+                            <div class="table-header">
+                                <div class="table-col">ID</div>
+                                <div class="table-col">Activity</div>
+                                <div class="table-col">Category</div>
+                                <div class="table-col">Priority</div>
+                                <div class="table-col">Status</div>
+                                <div class="table-col">Score</div>
+                            </div>
+                            <div class="table-body" id="activitiesTable">
+                                <div class="empty-activities">
+                                    <div class="empty-icon">
+                                        <i class="fas fa-tasks"></i>
+                                    </div>
+                                    <h4>No Activities Yet</h4>
+                                    <p>Your activities will appear here once you start adding them</p>
+                                    <button class="btn outline" id="startAddingBtn">
+                                        <i class="fas fa-plus"></i>
+                                        Start Adding Activities
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="userinterface.js"></script>
+</body>
+</html>

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <link rel="website icon" type="JPEG" href="fv.JPEG">
+    <title>Login Page</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="login.css">
+</head>
+<body>
+    <section>
+        <div class="blur-bg"></div>
+        
+        <div class="login-container">
+            <form id="loginForm">
+                <div class="header">
+                    <h2>Welcome Back</h2>
+                    <p class="subtitle">Sign in to your account</p>
+                </div>
+
+                <div class="input-group">
+                    <div class="input-box">
+                        <span class="icon">
+                            <i class="fas fa-envelope"></i>
+                        </span>
+                        <input type="email" name="email" required 
+                               placeholder=" "
+                               autocomplete="off" id="loginEmail">
+                        <label>Email Address</label>
+                    </div>
+
+                    <div class="input-box">
+                        <span class="icon">
+                            <i class="fas fa-lock"></i>
+                        </span>
+                        <input type="password" name="password" required 
+                               placeholder=" "
+                               autocomplete="off" id="loginPassword">
+                        <label>Password</label>
+                    </div>
+                </div>
+
+                <div class="options">
+                    <label class="checkbox">
+                        <input type="checkbox" name="remember">
+                        <span class="checkmark">Remember me</span>
+                    </label>
+                </div>
+
+                <button type="submit" class="login-btn">
+                    <i class="fas fa-sign-in-alt"></i> Sign In
+                </button>
+
+                <div class="register-link">
+                    <p>New here? <a href="register.html">Create an account</a></p>
+                </div>
+            </form>
+        </div>
+        
+        <div class="floating-elements">
+            <div class="circle circle-1"></div>
+            <div class="circle circle-2"></div>
+            <div class="circle circle-3"></div>
+        </div>
+    </section>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBX3OonJ08IK7egsDJv2TuZfhveTSV7NmA",
+            authDomain: "taskpulse-41edb.firebaseapp.com",
+            projectId: "taskpulse-41edb",
+            storageBucket: "taskpulse-41edb.firebasestorage.app",
+            messagingSenderId: "122473516709",
+            appId: "1:122473516709:web:ca6bd67fa004fe483b074c",
+            measurementId: "G-P18NQ6S57S"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        const form = document.getElementById("loginForm");
+
+        form.addEventListener("submit", (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById("loginEmail").value;
+            const password = document.getElementById("loginPassword").value;
+
+            signInWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    alert("Login successful 🎉");
+                    window.location.href = "userinterface.html";
+                })
+                .catch((error) => {
+                    alert(error.message);
+                });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,441 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100vh;
+    background: url('https://inbotiqa.com/wp-content/uploads/2018/10/TASK_MANAGEMENT.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    position: relative;
+}
+
+/* Dark overlay for better contrast */
+section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 0;
+}
+
+.blur-bg {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backdrop-filter: blur(5px);
+    background: rgba(0, 0, 0, 0.2);
+    z-index: 1;
+}
+
+/* ===== LOGIN BOX ===== */
+.login-container {
+    position: relative;
+    width: 420px;
+    padding: 50px 40px;
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 20px;
+    backdrop-filter: blur(15px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+    z-index: 2;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.login-container h2 {
+    font-size: 2.4em;
+    color: #fff;
+    text-align: center;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+    background: linear-gradient(90deg, #64b3f4, #c2e59c);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.subtitle {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1em;
+    font-weight: 400;
+    letter-spacing: 0.3px;
+}
+
+/* ===== INPUT ===== */
+.input-group {
+    margin-bottom: 10px;
+}
+
+.input-box {
+    position: relative;
+    width: 100%;
+    margin-bottom: 32px;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.4);
+    transition: all 0.3s ease;
+}
+
+.input-box:focus-within {
+    border-bottom: 2px solid #64b3f4;
+}
+
+.input-box label {
+    position: absolute;
+    top: 50%;
+    left: 5px;
+    transform: translateY(-50%);
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1em;
+    font-weight: 400;
+    pointer-events: none;
+    transition: all 0.3s ease;
+    letter-spacing: 0.3px;
+}
+
+.input-box input {
+    width: 100%;
+    height: 50px;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #fff;
+    font-size: 1em;
+    font-weight: 400;
+    padding: 0 35px 0 5px;
+    caret-color: #64b3f4;
+    letter-spacing: 0.3px;
+}
+
+/* FLOATING LABEL FIX */
+.input-box input:focus ~ label,
+.input-box input:not(:placeholder-shown) ~ label {
+    top: -12px;
+    font-size: 0.85em;
+    font-weight: 600;
+    color: #64b3f4;
+}
+
+/* ICON */
+.input-box .icon {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1.2em;
+    transition: color 0.3s ease;
+}
+
+.input-box:focus-within .icon {
+    color: #64b3f4;
+}
+
+/* ===== AUTOFILL FIX (WHITE ISSUE) ===== */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+    -webkit-text-fill-color: #fff;
+    -webkit-box-shadow: 0 0 0px 1000px rgba(0, 0, 0, 0.4) inset;
+    transition: background-color 5000s ease-in-out 0s;
+}
+
+/* ===== OPTIONS ===== */
+.options {
+    margin: 20px 0 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9em;
+    color: #fff;
+}
+
+.checkbox {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-size: 0.95em;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.checkbox input {
+    margin-right: 8px;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    accent-color: #64b3f4;
+}
+
+.forgot-password {
+    color: rgba(255, 255, 255, 0.9);
+    text-decoration: none;
+    font-size: 0.95em;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.forgot-password::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: -3px;
+    left: 0;
+    background: #64b3f4;
+    transition: width 0.3s ease;
+}
+
+.forgot-password:hover {
+    color: #64b3f4;
+}
+
+.forgot-password:hover::after {
+    width: 100%;
+}
+
+/* ===== BUTTON WITH ENHANCED HOVER EFFECTS ===== */
+.login-btn {
+    width: 100%;
+    height: 50px;
+    background: linear-gradient(135deg, #64b3f4 0%, #c2e59c 100%);
+    border: none;
+    border-radius: 40px;
+    cursor: pointer;
+    font-size: 1.1em;
+    color: #0a192f;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    margin-top: 10px;
+    transition: all 0.4s ease;
+    box-shadow: 0 5px 15px rgba(100, 179, 244, 0.3);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Button Hover Effect */
+.login-btn:hover {
+    background: linear-gradient(135deg, #c2e59c 0%, #64b3f4 100%);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(100, 179, 244, 0.5);
+    color: #fff;
+}
+
+/* Button Active/Pressed Effect */
+.login-btn:active {
+    transform: translateY(1px);
+    box-shadow: 0 3px 10px rgba(100, 179, 244, 0.3);
+}
+
+/* Button Ripple Effect */
+.login-btn::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.login-btn:active::after {
+    width: 300px;
+    height: 300px;
+}
+
+/* ===== REGISTER ===== */
+.register-link {
+    text-align: center;
+    margin-top: 35px;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.95em;
+    letter-spacing: 0.3px;
+}
+
+.register-link a {
+    color: #64b3f4;
+    font-weight: 700;
+    text-decoration: none;
+    margin-left: 5px;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.register-link a::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: -3px;
+    left: 0;
+    background: #64b3f4;
+    transition: width 0.3s ease;
+}
+
+.register-link a:hover {
+    color: #87CEEB;
+}
+
+.register-link a:hover::after {
+    width: 100%;
+}
+
+/* ===== FLOATING ELEMENTS ===== */
+.floating-elements {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 0;
+}
+
+.circle {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(100, 179, 244, 0.1);
+    backdrop-filter: blur(5px);
+}
+
+.circle-1 {
+    width: 120px;
+    height: 120px;
+    top: 10%;
+    left: 10%;
+    animation: float 25s infinite linear;
+}
+
+.circle-2 {
+    width: 80px;
+    height: 80px;
+    bottom: 15%;
+    right: 15%;
+    animation: float 20s infinite linear reverse;
+}
+
+.circle-3 {
+    width: 60px;
+    height: 60px;
+    top: 60%;
+    left: 80%;
+    animation: float 15s infinite linear;
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(0) rotate(0deg);
+    }
+    50% {
+        transform: translateY(-20px) rotate(180deg);
+    }
+    100% {
+        transform: translateY(0) rotate(360deg);
+    }
+}
+
+/* ===== MOBILE RESPONSIVE ===== */
+@media (max-width: 480px) {
+    .login-container {
+        width: 90%;
+        padding: 40px 30px;
+        margin: 20px;
+    }
+
+    .login-container h2 {
+        font-size: 2em;
+    }
+
+    .input-box {
+        margin-bottom: 28px;
+    }
+
+    .options {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .circle-1, .circle-2, .circle-3 {
+        display: none;
+    }
+}
+
+@media (max-width: 360px) {
+    .login-container {
+        width: 100%;
+        height: 100vh;
+        border: none;
+        border-radius: 0;
+        padding: 40px 25px;
+        background: rgba(0, 0, 0, 0.7);
+    }
+
+    .header {
+        margin-bottom: 35px;
+    }
+}
+/* ===== FIX MOBILE SCROLL ISSUE ===== */
+@media (max-width: 768px) {
+    body {
+        overflow-y: auto !important;
+        height: auto !important;
+        min-height: 100vh !important;
+    }
+    
+    section {
+        height: auto !important;
+        min-height: 100vh !important;
+        padding: 20px !important;
+        display: flex !important;
+        align-items: center !important;
+        overflow-y: auto !important;
+    }
+    
+    .login-container {
+        margin: 40px auto !important;
+        position: relative !important;
+        transform: none !important;
+    }
+}
+
+/* Touch-friendly for mobile */
+@media (max-width: 768px) {
+    .login-btn,
+    button,
+    .forgot-password,
+    .register-link a {
+        min-height: 44px !important;
+        min-width: 44px !important;
+    }
+    
+    .input-box input {
+        font-size: 16px !important; /* iOS zoom prevent */
+    }
+}

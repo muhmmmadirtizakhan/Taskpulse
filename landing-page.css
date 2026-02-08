@@ -1,0 +1,285 @@
+body, html {
+    height: 100%;
+    margin: 0;
+    overflow: hidden; 
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    color: white;
+}
+
+.bg-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(rgba(10, 15, 28, 0.88), rgba(10, 15, 28, 0.92)), 
+                url('https://inbotiqa.com/wp-content/uploads/2018/10/TASK_MANAGEMENT.png');
+    background-size: cover;
+    background-position: center;
+    z-index: -1;
+}
+
+.glass-card {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 32px;
+    padding: 2.5rem;
+    transition: all 0.4s ease;
+}
+
+.glass-card:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(125, 211, 252, 0.6);
+    transform: translateY(-10px);
+}
+
+.gradient-text {
+    background: linear-gradient(135deg, #7dd3fc 0%, #bef264 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.btn-primary {
+    background: linear-gradient(90deg, #7dd3fc, #bef264);
+    color: #0f172a;
+    box-shadow: 0 15px 35px -10px rgba(125, 211, 252, 0.5);
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 20px 40px -10px rgba(190, 242, 100, 0.6);
+}
+
+/* Max Visibility for Descriptions */
+.text-white-fixed {
+    color: #ffffff !important;
+    opacity: 1 !important;
+}
+
+.hero-section {
+    animation: fadeIn 1s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+/* ===== RESPONSIVE CSS ONLY - NO DESIGN/TECHNICAL/GUI CHANGES ===== */
+/* Desktop version remains exactly the same */
+
+/* Tablet Responsiveness (769px to 1024px) */
+@media only screen and (max-width: 1024px) {
+    /* Landing Page Responsive */
+    .hero-section h1 {
+        font-size: 4.5rem !important;
+    }
+    
+    .glass-card {
+        padding: 1.5rem !important;
+    }
+    
+    /* Login Page Responsive */
+    section {
+        padding: 20px !important;
+    }
+    
+    .login-container {
+        width: 90% !important;
+        max-width: 400px !important;
+    }
+}
+
+/* Mobile Responsiveness (max-width: 768px) */
+@media only screen and (max-width: 768px) {
+    /* ===== LANDING PAGE RESPONSIVE ===== */
+    body {
+        overflow-x: hidden !important;
+        width: 100% !important;
+    }
+    
+    .hero-section {
+        height: auto !important;
+        min-height: 100vh !important;
+        padding: 2rem 1rem !important;
+        justify-content: center !important;
+        gap: 3rem !important;
+    }
+    
+    .hero-section h1 {
+        font-size: 3rem !important;
+        line-height: 1.2 !important;
+    }
+    
+    .hero-section p {
+        font-size: 1.1rem !important;
+        padding: 0 1rem !important;
+    }
+    
+    .grid {
+        grid-template-columns: 1fr !important;
+        gap: 1.5rem !important;
+        width: 100% !important;
+        max-width: 400px !important;
+        margin: 0 auto !important;
+    }
+    
+    .glass-card {
+        width: 100% !important;
+        margin: 0 auto !important;
+    }
+    
+    .btn-primary {
+        width: 100% !important;
+        max-width: 300px !important;
+        padding: 1rem 2rem !important;
+        justify-content: center !important;
+    }
+    
+    /* ===== LOGIN PAGE RESPONSIVE ===== */
+    section {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 1rem !important;
+        height: 100vh !important;
+        min-height: -webkit-fill-available !important;
+    }
+    
+    .login-container {
+        width: 100% !important;
+        max-width: 400px !important;
+        margin: 0 auto !important;
+        padding: 2rem 1.5rem !important;
+    }
+    
+    .login-container h2 {
+        font-size: 2rem !important;
+    }
+    
+    .subtitle {
+        font-size: 0.9rem !important;
+    }
+    
+    .input-box {
+        margin-bottom: 1.5rem !important;
+    }
+    
+    .input-box input {
+        height: 44px !important;
+        font-size: 16px !important; /* Prevents iOS zoom */
+    }
+    
+    .options {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 1rem !important;
+        margin: 1.5rem 0 !important;
+    }
+    
+    .login-btn {
+        height: 50px !important;
+        min-height: 44px !important;
+        font-size: 1rem !important;
+    }
+    
+    .register-link {
+        margin-top: 1.5rem !important;
+        font-size: 0.9rem !important;
+    }
+    
+    /* Touch-friendly sizes */
+    button, 
+    .btn, 
+    .button, 
+    a[role="button"] {
+        min-height: 44px !important;
+        min-width: 44px !important;
+    }
+    
+    /* Form elements mobile optimization */
+    input, 
+    textarea, 
+    select {
+        font-size: 16px !important; /* Prevents iOS zoom */
+    }
+    
+    /* Hide floating elements on very small screens */
+    @media (max-width: 360px) {
+        .circle-1, 
+        .circle-2, 
+        .circle-3 {
+            opacity: 0.3 !important;
+        }
+    }
+}
+
+/* Small Mobile (max-width: 480px) */
+@media only screen and (max-width: 480px) {
+    .hero-section h1 {
+        font-size: 2.5rem !important;
+    }
+    
+    .hero-section p {
+        font-size: 1rem !important;
+    }
+    
+    .glass-card h3 {
+        font-size: 1.5rem !important;
+    }
+    
+    .btn-primary {
+        font-size: 1.1rem !important;
+        padding: 0.9rem 1.5rem !important;
+    }
+}
+
+/* Prevent horizontal scrolling on all mobile devices */
+@media only screen and (max-width: 768px) {
+    html, body {
+        max-width: 100% !important;
+        overflow-x: hidden !important;
+    }
+    
+    * {
+        max-width: 100% !important;
+    }
+}
+
+/* iOS Safe Area Support */
+@supports (padding: max(0px)) {
+    @media only screen and (max-width: 768px) {
+        body {
+            padding-left: min(0px, env(safe-area-inset-left)) !important;
+            padding-right: min(0px, env(safe-area-inset-right)) !important;
+            padding-top: min(0px, env(safe-area-inset-top)) !important;
+            padding-bottom: min(0px, env(safe-area-inset-bottom)) !important;
+        }
+        
+        .hero-section {
+            padding-left: max(1rem, env(safe-area-inset-left)) !important;
+            padding-right: max(1rem, env(safe-area-inset-right)) !important;
+        }
+    }
+}
+
+/* High-resolution mobile screens */
+@media only screen and (max-width: 768px) and (min-resolution: 2dppx) {
+    .glass-card,
+    .login-container {
+        backdrop-filter: blur(10px) !important;
+        -webkit-backdrop-filter: blur(10px) !important;
+    }
+}
+@media (max-width: 768px) {
+    html, body {
+        overflow-y: scroll !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+    
+    body {
+        position: relative !important;
+        height: auto !important;
+    }
+}

@@ -1,0 +1,6 @@
+node_modules/
+*.exe
+activity
+.env
+.DS_Store
+activity_logs.json
