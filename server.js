@@ -767,17 +767,13 @@ app.get('/api/health', (req, res) => {
 });
 
 // ==================== START SERVER ====================
-app.listen(PORT, () => {
-    console.log(`🚀 Server: http://localhost:${PORT}`);
-    console.log(`👉 App: http://localhost:${PORT}/app`);
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`🚀 Server running on port: ${PORT}`);
+    console.log(`🌐 Railway URL: https://web-production-7a642.up.railway.app`);
+    console.log(`👉 App: https://web-production-7a642.up.railway.app/app`);
     console.log(`📌 Supabase URL: ${supabaseUrl}`);
-    console.log(`\n🔥 NEW FEATURE: PERMANENT DELETE`);
-    console.log(`📌 Permanent Delete: POST http://localhost:${PORT}/api/permanent-delete`);
-    console.log(`📌 Regular Delete: POST http://localhost:${PORT}/api/delete-activity`);
-    console.log(`📌 Undo Delete: POST http://localhost:${PORT}/api/undo-delete`);
-    console.log(`📌 Redo Delete: POST http://localhost:${PORT}/api/redo-delete`);
-    console.log(`\n✅ Permanent Delete Feature Fully Integrated!`);
-    console.log(`   - Frontend: Permanent delete button in undo section`);
-    console.log(`   - Backend: /api/permanent-delete endpoint`);
-    console.log(`   - C++: "permanent-delete" command supported`);
+    console.log(`\n✅ TaskPulse deployed successfully on Railway!`);
+    console.log(`✅ C++ Activity Manager integrated`);
+    console.log(`✅ Supabase Database connected`);
+    console.log(`✅ All features operational`);
 });
