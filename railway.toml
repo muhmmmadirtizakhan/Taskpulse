@@ -1,0 +1,12 @@
+[build]
+builder = "nixpacks"
+
+[build.environment]
+PORT = "3000"
+NODE_ENV = "production"
+
+[variables]
+PORT = "3000"
+const SUPABASE_URL = 'https://izphctaftgaopqijetkp.supabase.co'; 
+const SUPABASE_KEY  = 'sb_publishable_SurU_W9s_wCBQUxxwwztfQ_AmJWvIte'; 
+PORT = "3000"
