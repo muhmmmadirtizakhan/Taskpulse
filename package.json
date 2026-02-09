@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
+    "start": "PORT=${PORT:-3000} node server.js",
     "compile": "bash compile.sh",
-    "build": "npm install && bash compile.sh"
+    "build": "PORT=3000 npm install && PORT=3000 bash compile.sh"
   },
   "dependencies": {
     "express": "^4.22.1",
