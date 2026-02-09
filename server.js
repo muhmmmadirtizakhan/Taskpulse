@@ -8,9 +8,10 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Supabase Configuration
-const supabaseUrl = 'https://izphctaftgaopqijetkp.supabase.co';
-const supabaseKey = 'sb_publishable_SurU_W9s_wCBQUxxwwztfQ_AmJWvIte';
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_KEY;
 const supabase = createClient(supabaseUrl, supabaseKey);
+
 
 // Middleware
 app.use(cors());
