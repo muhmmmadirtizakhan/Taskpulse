@@ -5,7 +5,7 @@
   "scripts": {
     "start": "PORT=${PORT:-3000} node server.js",
     "compile": "bash compile.sh",
-    "build": "PORT=3000 npm install && PORT=3000 bash compile.sh"
+    "build": "npm install && bash compile.sh"
   },
   "dependencies": {
     "express": "^4.22.1",
