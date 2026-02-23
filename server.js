@@ -6,13 +6,12 @@ const { createClient } = require('@supabase/supabase-js');
 const fs = require('fs');
 
 const app = express();
-const PORT = process.env.PORT || 3000; // Railway ka PORT use karo
+const PORT = process.env.PORT || 3000;
 
-// ✅ Supabase Configuration - ENVIRONMENT VARIABLES use karo!
+// Supabase Configuration
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_KEY;
 
-// Agar env variables nahi hain to error do
 if (!supabaseUrl || !supabaseKey) {
     console.error('❌ ERROR: SUPABASE_URL and SUPABASE_KEY environment variables required!');
     process.exit(1);
@@ -25,60 +24,53 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(__dirname));
 
-// ✅ C++ executable path - Railway ke hisaab se
+// ✅ FIXED: C++ executable path for Railway
 const getCppExecutable = () => {
-    // Railway pe Linux chalta hai
-    if (process.platform === 'linux') {
-        // Pehle activity executable dhundo
-        const linuxExe = path.join(__dirname, 'activity');
-        if (fs.existsSync(linuxExe)) {
-            return linuxExe;
-        }
-        // Ya phir activity.exe bhi check karo
-        const linuxExeAlt = path.join(__dirname, 'activity.exe');
-        if (fs.existsSync(linuxExeAlt)) {
-            return linuxExeAlt;
+    console.log('🔍 Looking for C++ executable...');
+    
+    const possiblePaths = [
+        path.join(__dirname, 'activity'),        // Linux (Railway)
+        path.join(__dirname, 'activity.exe'),    // Windows
+        '/app/activity',                          // Railway absolute path
+        path.join(__dirname, 'cpp', 'activity'),  // cpp folder
+        path.join(__dirname, 'cpp', 'activity.exe')
+    ];
+    
+    for (const exePath of possiblePaths) {
+        try {
+            if (fs.existsSync(exePath)) {
+                console.log(`✅ C++ Found at: ${exePath}`);
+                // Make executable on Linux
+                if (process.platform === 'linux') {
+                    try {
+                        fs.chmodSync(exePath, '755');
+                    } catch (e) {
+                        console.log(`⚠️ Cannot chmod: ${e.message}`);
+                    }
+                }
+                return exePath;
+            }
+        } catch (e) {
+            console.log(`⚠️ Check failed for: ${exePath}`);
         }
     }
     
-    // Windows ke liye (local development)
-    if (process.platform === 'win32') {
-        const winExe = path.join(__dirname, 'cpp', 'activity.exe');
-        if (fs.existsSync(winExe)) {
-            return winExe;
-        }
-        const winExeAlt = path.join(__dirname, 'activity.exe');
-        if (fs.existsSync(winExeAlt)) {
-            return winExeAlt;
-        }
-    }
-    
-    // Last attempt - root folder mein dhundo
-    const rootExe = path.join(__dirname, 'activity');
-    if (fs.existsSync(rootExe)) {
-        return rootExe;
-    }
-    
+    console.log('⚠️ C++ executable NOT FOUND, continuing without C++');
     return null;
 };
 
 const CPP_EXE = getCppExecutable();
-console.log(`🔧 C++ Executable: ${CPP_EXE || 'NOT FOUND'}`);
 
-// Helper function to run C++ commands
+// Helper function to run C++
 const runCpp = (args) => {
     return new Promise((resolve) => {
         if (!CPP_EXE) {
-            console.log('⚠️ C++ executable not found, skipping...');
+            console.log('⚠️ C++ not available, skipping...');
             return resolve({ success: false, output: 'C++ not available' });
         }
         
         try {
-            // Make sure executable has permissions
-            if (process.platform === 'linux') {
-                fs.chmodSync(CPP_EXE, '755');
-            }
-            
+            console.log(`🚀 Running C++: ${CPP_EXE} ${args.join(' ')}`);
             const cppProcess = spawn(CPP_EXE, args, { shell: true });
             let output = '';
             let error = '';
@@ -184,7 +176,6 @@ app.post('/api/add-activity', async (req, res) => {
             `"${userId}"`
         ];
         
-        console.log('📤 Sending to C++:', args);
         await runCpp(args);
         
         res.json({ 
@@ -204,46 +195,29 @@ app.post('/api/update-activity', async (req, res) => {
     try {
         const { activityId, title, category, priority, score, description, status, userId } = req.body;
         
-        console.log('\n📝 UPDATE REQUEST:');
-        console.log('Activity ID received:', activityId);
-        console.log('User ID:', userId);
-        
         if (!activityId || !userId) {
             return res.json({ success: false, message: "Activity ID and User ID required!" });
         }
         
-        if (!title || title.trim() === '') {
-            return res.json({ success: false, message: "Title required!" });
-        }
-        
         // Find activity
-        let foundActivity = null;
-        
-        const { data: exactMatch, error: exactError } = await supabase
+        const { data: foundActivity, error: findError } = await supabase
             .from('activities')
             .select('*')
             .eq('id', activityId)
             .eq('user_id', userId)
-            .maybeSingle();
+            .single();
         
-        if (!exactError && exactMatch) {
-            foundActivity = exactMatch;
+        if (findError || !foundActivity) {
+            return res.json({ success: false, message: "Activity not found" });
         }
         
-        if (!foundActivity) {
-            return res.json({ 
-                success: false, 
-                message: `Activity not found with ID: ${activityId}`
-            });
-        }
-        
-        // Prepare update data
+        // Update data
         const updateData = {
-            title: title.trim(),
+            title: title?.trim() || foundActivity.title,
             category: category || foundActivity.category,
             priority: priority || foundActivity.priority,
-            score: parseInt(score) || foundActivity.score || 0,
-            description: description || foundActivity.description || '',
+            score: parseInt(score) || foundActivity.score,
+            description: description || foundActivity.description,
             status: status || foundActivity.status,
             updated_at: new Date().toISOString()
         };
@@ -252,18 +226,13 @@ app.post('/api/update-activity', async (req, res) => {
         const { data: updatedData, error: updateError } = await supabase
             .from('activities')
             .update(updateData)
-            .eq('id', foundActivity.id)
+            .eq('id', activityId)
             .eq('user_id', userId)
             .select();
         
         if (updateError) {
-            return res.status(500).json({ 
-                success: false, 
-                message: "Database update failed: " + updateError.message 
-            });
+            return res.status(500).json({ success: false, message: "Database update failed" });
         }
-        
-        console.log('✅ Successfully updated activity');
         
         // Send to C++
         const args = [
@@ -286,18 +255,11 @@ app.post('/api/update-activity', async (req, res) => {
         
         await runCpp(args);
         
-        res.json({ 
-            success: true, 
-            message: "Activity updated successfully!",
-            data: updatedData[0]
-        });
+        res.json({ success: true, message: "Activity updated!", data: updatedData[0] });
         
     } catch (error) {
         console.error('❌ Update Error:', error);
-        res.status(500).json({ 
-            success: false, 
-            message: "Server error: " + error.message 
-        });
+        res.status(500).json({ success: false, message: "Server error" });
     }
 });
 
@@ -305,8 +267,6 @@ app.post('/api/update-activity', async (req, res) => {
 app.post('/api/delete-activity', async (req, res) => {
     try {
         const { activityId, userId } = req.body;
-        
-        console.log('\n🗑️ DELETE REQUEST:', { activityId, userId });
         
         if (!activityId || !userId) {
             return res.json({ success: false, message: "Activity ID and User ID required!" });
@@ -321,7 +281,7 @@ app.post('/api/delete-activity', async (req, res) => {
             .single();
         
         if (fetchError || !activityToDelete) {
-            return res.json({ success: false, message: "Activity not found or access denied" });
+            return res.json({ success: false, message: "Activity not found" });
         }
         
         // Delete from Supabase
@@ -332,22 +292,13 @@ app.post('/api/delete-activity', async (req, res) => {
             .eq('user_id', userId);
         
         if (error) {
-            return res.status(500).json({ 
-                success: false, 
-                message: "Database delete error" 
-            });
+            return res.status(500).json({ success: false, message: "Database delete error" });
         }
-        
-        console.log('✅ Deleted from Supabase');
         
         // Send to C++
         await runCpp(["delete", `"${activityId}"`]);
         
-        res.json({ 
-            success: true, 
-            message: "Activity deleted!",
-            deletedActivity: activityToDelete
-        });
+        res.json({ success: true, message: "Activity deleted!", deletedActivity: activityToDelete });
         
     } catch (error) {
         console.error('❌ Delete Error:', error);
@@ -359,8 +310,6 @@ app.post('/api/delete-activity', async (req, res) => {
 app.post('/api/permanent-delete', async (req, res) => {
     try {
         const { activityId, userId } = req.body;
-        
-        console.log('\n🔥 PERMANENT DELETE REQUEST:', { activityId, userId });
         
         if (!activityId || !userId) {
             return res.json({ success: false, message: "Activity ID and User ID required!" });
@@ -377,9 +326,9 @@ app.post('/api/permanent-delete', async (req, res) => {
             return res.json({ success: false, message: "Activity not found" });
         }
         
-        // Verify ownership
-        if (activityToDelete.user_id.toLowerCase() !== userId.toLowerCase()) {
-            return res.json({ success: false, message: "Access denied: Not your activity" });
+        // Check ownership
+        if (activityToDelete.user_id !== userId) {
+            return res.json({ success: false, message: "Access denied" });
         }
         
         // Permanent delete
@@ -389,106 +338,16 @@ app.post('/api/permanent-delete', async (req, res) => {
             .eq('id', activityId);
         
         if (error) {
-            return res.status(500).json({ 
-                success: false, 
-                message: "Database delete error: " + error.message 
-            });
+            return res.status(500).json({ success: false, message: "Database delete error" });
         }
-        
-        console.log('🔥 PERMANENTLY Deleted:', activityToDelete.title);
         
         // Send to C++
         await runCpp(["permanent-delete", `"${activityId}"`, `"${activityToDelete.title}"`]);
         
-        res.json({ 
-            success: true, 
-            message: "Activity PERMANENTLY deleted! Can't be undone.",
-            deletedActivity: activityToDelete
-        });
+        res.json({ success: true, message: "Activity permanently deleted!" });
         
     } catch (error) {
         console.error('❌ Permanent Delete Error:', error);
-        res.status(500).json({ success: false, message: "Server error: " + error.message });
-    }
-});
-
-// ==================== UNDO DELETE ====================
-app.post('/api/undo-delete', async (req, res) => {
-    try {
-        const { activity, userId } = req.body;
-        
-        console.log('\n↩️ UNDO DELETE:', { activityTitle: activity?.title, userId });
-        
-        if (!activity || !userId) {
-            return res.json({ success: false, message: "Activity and User ID required!" });
-        }
-        
-        // Restore to database
-        const { data, error } = await supabase
-            .from('activities')
-            .insert([{
-                ...activity,
-                user_id: userId,
-                firebase_uid: userId,
-                updated_at: new Date().toISOString()
-            }])
-            .select();
-        
-        if (error) {
-            return res.status(500).json({ 
-                success: false, 
-                message: "Database undo error" 
-            });
-        }
-        
-        console.log('✅ Activity restored to database');
-        
-        res.json({ 
-            success: true, 
-            message: "Activity restored to database!",
-            data: data[0]
-        });
-        
-    } catch (error) {
-        console.error('❌ Undo Delete Error:', error);
-        res.status(500).json({ success: false, message: "Server error" });
-    }
-});
-
-// ==================== REDO DELETE ====================
-app.post('/api/redo-delete', async (req, res) => {
-    try {
-        const { activityId, userId } = req.body;
-        
-        console.log('\n↪️ REDO DELETE:', { activityId, userId });
-        
-        if (!activityId || !userId) {
-            return res.json({ success: false, message: "Activity ID and User ID required!" });
-        }
-        
-        // Delete again
-        const { error } = await supabase
-            .from('activities')
-            .delete()
-            .eq('id', activityId)
-            .eq('user_id', userId);
-        
-        if (error) {
-            return res.status(500).json({ 
-                success: false, 
-                message: "Database redo error" 
-            });
-        }
-        
-        console.log('✅ Activity deleted again from database');
-        
-        res.json({ 
-            success: true, 
-            message: "Activity deleted again from database!"
-        });
-        
-    } catch (error) {
-        console.error('❌ Redo Delete Error:', error);
         res.status(500).json({ success: false, message: "Server error" });
     }
 });
@@ -509,57 +368,27 @@ app.get('/api/user-activities', async (req, res) => {
             .order('created_at', { ascending: false });
         
         if (error) {
-            return res.status(500).json({ 
-                success: false, 
-                message: "Database error" 
-            });
+            return res.status(500).json({ success: false, message: "Database error" });
         }
         
-        res.json({ 
-            success: true, 
-            activities: data || [] 
-        });
+        res.json({ success: true, activities: data || [] });
         
     } catch (error) {
-        console.error('❌ Error loading activities:', error);
+        console.error('❌ Error:', error);
         res.status(500).json({ success: false, message: "Server error" });
     }
 });
 
-// ==================== UNDO (C++ Only) ====================
+// ==================== UNDO ====================
 app.post('/api/undo', async (req, res) => {
-    try {
-        console.log('\n↩️ UNDO REQUEST (C++)');
-        
-        const result = await runCpp(["undo"]);
-        
-        res.json({ 
-            success: result.success, 
-            message: result.success ? "Undo successful" : "Nothing to undo" 
-        });
-        
-    } catch (error) {
-        console.error('❌ Undo Error:', error);
-        res.status(500).json({ success: false, message: "Server error" });
-    }
+    const result = await runCpp(["undo"]);
+    res.json({ success: result.success, message: result.success ? "Undo successful" : "Nothing to undo" });
 });
 
-// ==================== REDO (C++ Only) ====================
+// ==================== REDO ====================
 app.post('/api/redo', async (req, res) => {
-    try {
-        console.log('\n↪️ REDO REQUEST (C++)');
-        
-        const result = await runCpp(["redo"]);
-        
-        res.json({ 
-            success: result.success, 
-            message: result.success ? "Redo successful" : "Nothing to redo" 
-        });
-        
-    } catch (error) {
-        console.error('❌ Redo Error:', error);
-        res.status(500).json({ success: false, message: "Server error" });
-    }
+    const result = await runCpp(["redo"]);
+    res.json({ success: result.success, message: result.success ? "Redo successful" : "Nothing to redo" });
 });
 
 // ==================== TEST ENDPOINTS ====================
@@ -567,67 +396,23 @@ app.get('/api/test', (req, res) => {
     res.json({ 
         success: true, 
         message: "Server running on Railway!",
-        environment: process.env.NODE_ENV || 'development',
         cpp_available: !!CPP_EXE,
         cpp_path: CPP_EXE,
-        platform: process.platform,
-        features: {
-            permanent_delete: "✅ Available",
-            undo_redo: "✅ Available",
-            database: "Supabase"
-        }
+        platform: process.platform
     });
 });
 
-app.get('/api/test-supabase', async (req, res) => {
-    try {
-        const { data, error } = await supabase
-            .from('activities')
-            .select('count')
-            .limit(1);
-        
-        if (error) {
-            return res.json({ 
-                success: false, 
-                message: "Supabase connection failed",
-                error: error.message 
-            });
-        }
-        
-        res.json({ 
-            success: true, 
-            message: "Supabase connected successfully!"
-        });
-    } catch (error) {
-        res.json({ 
-            success: false, 
-            message: "Supabase test error",
-            error: error.message 
-        });
-    }
-});
-
-// ==================== HEALTH CHECK ====================
 app.get('/api/health', (req, res) => {
-    res.json({
-        status: 'healthy',
-        timestamp: new Date().toISOString(),
-        cpp: CPP_EXE ? 'available' : 'not found',
-        features: {
-            permanent_delete: 'active',
-            undo_redo: 'active',
-            cpp_integration: CPP_EXE ? 'active' : 'disabled'
-        }
-    });
+    res.json({ status: 'healthy', timestamp: new Date().toISOString() });
 });
 
 // ==================== START SERVER ====================
 app.listen(PORT, () => {
     console.log('\n═══════════════════════════════════════════════');
-    console.log(`🚀 TASKPULSE DEPLOYED ON RAILWAY!`);
+    console.log('🚀 TASKPULSE DEPLOYED ON RAILWAY!');
     console.log(`📌 PORT: ${PORT}`);
     console.log(`📌 Platform: ${process.platform}`);
     console.log(`📌 C++ Executable: ${CPP_EXE || '⚠️ NOT FOUND'}`);
-    console.log(`📌 Supabase: ${supabaseUrl ? '✅ Configured' : '❌ Missing URL'}`);
+    console.log(`📌 Supabase: ✅ Configured`);
     console.log('═══════════════════════════════════════════════\n');
 });
