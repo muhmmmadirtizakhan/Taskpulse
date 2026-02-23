@@ -4,8 +4,7 @@
   "main": "server.js",
   "scripts": {
     "start": "PORT=${PORT:-3000} node server.js",
-    "compile": "bash compile.sh",
-    "build": "npm install && bash compile.sh"
+    "build": "bash compile.sh"
   },
   "dependencies": {
     "express": "^4.22.1",
@@ -13,6 +12,6 @@
     "@supabase/supabase-js": "^2.95.3"
   },
   "engines": {
-    "node": "18.x"
+    "node": "20.x"
   }
 }
