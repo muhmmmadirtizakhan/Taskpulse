@@ -3,8 +3,20 @@ echo "🔥 BUILD STARTED"
 echo "Current dir: $(pwd)"
 ls -la
 
-echo "📦 Compiling Activity.cpp..."
-g++ -o activity Activity.cpp -std=c++11
+echo "📦 Compiling activity.cpp..."
+if [ -f "activity.cpp" ]; then
+    g++ -o activity activity.cpp -std=c++11
+else
+    echo "⚠️ activity.cpp not found, attempting case-insensitive search..."
+    found=$(ls | grep -i "activity.*\.cpp" | head -n 1)
+    if [ -n "$found" ]; then
+        echo "🔎 Found source: $found — compiling"
+        g++ -o activity "$found" -std=c++11
+    else
+        echo "❌ FAILED: No activity C++ source found"
+        exit 1
+    fi
+fi
 
 if [ -f "activity" ]; then
     chmod +x activity
