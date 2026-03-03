@@ -6,6 +6,7 @@
 #include <iomanip>
 #include <sstream>
 #include <stack>
+#include <queue>  // 👈 QUEUE INCLUDE KARO
 
 using namespace std;
 
@@ -29,18 +30,76 @@ struct Activity {
     string timestamp;
 };
 
-vector<Activity> activities;
+// 🔥 NOTIFICATION STRUCT FOR QUEUE
+struct Notification {
+    string message;
+    string type;        // "ADD", "UPDATE", "DELETE", "PERMANENT_DELETE"
+    string activityId;
+    string timestamp;
+    
+    Notification(string msg, string t, string id) 
+        : message(msg), type(t), activityId(id), timestamp(getCurrentTime()) {}
+};
+
+// 🔥 Node structure for linked list
+struct Node {
+    Activity data;
+    Node* next;
+    
+    Node(Activity act) : data(act), next(nullptr) {}
+};
+
+// 🔥 Linked list head
+Node* head = nullptr;
+int activityCount = 0;
+
+// 📚 STACKS
 stack<Activity> undoStack;
 stack<Activity> redoStack;
 stack<pair<Activity, Activity>> updateUndoStack;
-
-// 🔥 PERMANENT DELETE STACK
 stack<Activity> permanentDeleteStack;
+
+// 📋 QUEUE - NOTIFICATION SYSTEM
+queue<Notification> notificationQueue;
+
+// Function to add notification
+void addNotification(string message, string type, string activityId) {
+    Notification notif(message, type, activityId);
+    notificationQueue.push(notif);
+    cout << "🔔 NOTIFICATION QUEUED: " << message << endl;
+}
+
+// Function to process notifications (FIFO)
+void processNotifications() {
+    if (notificationQueue.empty()) {
+        cout << "📭 No notifications in queue" << endl;
+        return;
+    }
+    
+    cout << "\n📨 PROCESSING NOTIFICATIONS (FIFO ORDER):" << endl;
+    cout << "════════════════════════════════════════\n";
+    
+    int count = 1;
+    while (!notificationQueue.empty()) {
+        Notification notif = notificationQueue.front();
+        notificationQueue.pop();
+        
+        cout << count++ << ". [" << notif.timestamp << "] ";
+        cout << "[" << notif.type << "] ";
+        cout << notif.message << " (ID: " << notif.activityId << ")" << endl;
+    }
+    cout << "════════════════════════════════════════\n";
+}
 
 // Add activity
 void addActivity(Activity act) {
-    activities.push_back(act);
+    Node* newNode = new Node(act);
+    newNode->next = head;
+    head = newNode;
+    activityCount++;
+    
     cout << "✅ ADDED: " << act.title << endl;
+    addNotification("Activity added: " + act.title, "ADD", act.id);
     
     while(!redoStack.empty()) {
         redoStack.pop();
@@ -49,13 +108,15 @@ void addActivity(Activity act) {
 
 // Update activity
 void updateActivity(string activityId, Activity newAct, Activity oldAct) {
-    for (auto &activity : activities) {
-        if (activity.id == activityId) {
-            updateUndoStack.push({activity, newAct});
-            activity = newAct;
-            activity.timestamp = getCurrentTime();
+    Node* current = head;
+    while (current != nullptr) {
+        if (current->data.id == activityId) {
+            updateUndoStack.push({current->data, newAct});
+            current->data = newAct;
+            current->data.timestamp = getCurrentTime();
             
             cout << "📝 UPDATED: " << oldAct.title << " → " << newAct.title << endl;
+            addNotification("Activity updated: " + oldAct.title + " → " + newAct.title, "UPDATE", activityId);
             
             while(!redoStack.empty()) {
                 redoStack.pop();
@@ -63,6 +124,7 @@ void updateActivity(string activityId, Activity newAct, Activity oldAct) {
             
             return;
         }
+        current = current->next;
     }
     cout << "❌ UPDATE FAILED: Activity not found - " << activityId << endl;
 }
@@ -77,39 +139,59 @@ void undoUpdate() {
     auto [oldAct, newAct] = updateUndoStack.top();
     updateUndoStack.pop();
     
-    for (auto &activity : activities) {
-        if (activity.id == oldAct.id) {
-            activity = oldAct;
+    Node* current = head;
+    while (current != nullptr) {
+        if (current->data.id == oldAct.id) {
+            current->data = oldAct;
             cout << "↩️  UPDATE UNDONE: " << newAct.title << " → " << oldAct.title << endl;
+            addNotification("Update undone: " + newAct.title + " → " + oldAct.title, "UNDO_UPDATE", oldAct.id);
             return;
         }
+        current = current->next;
     }
 }
 
 // Delete activity by ID
 void deleteActivity(string activityId) {
-    for (auto it = activities.begin(); it != activities.end(); ++it) {
-        if (it->id == activityId) {
-            undoStack.push(*it);
+    Node* current = head;
+    Node* prev = nullptr;
+    
+    while (current != nullptr) {
+        if (current->data.id == activityId) {
+            undoStack.push(current->data);
             
             while(!redoStack.empty()) {
                 redoStack.pop();
             }
             
-            activities.erase(it);
-            cout << "🗑️  DELETED (to undo stack): " << activityId << " - " << it->title << endl;
+            if (prev == nullptr) {
+                head = current->next;
+            } else {
+                prev->next = current->next;
+            }
+            
+            cout << "🗑️  DELETED (to undo stack): " << activityId << " - " << current->data.title << endl;
+            addNotification("Activity deleted: " + current->data.title, "DELETE", activityId);
+            
+            delete current;
+            activityCount--;
             return;
         }
+        prev = current;
+        current = current->next;
     }
     cout << "❌ DELETE FAILED: Activity not found - " << activityId << endl;
 }
 
 // 🔥🔥🔥 PERMANENT DELETE FUNCTION
 void permanentDeleteActivity(string activityId) {
-    for (auto it = activities.begin(); it != activities.end(); ++it) {
-        if (it->id == activityId) {
+    Node* current = head;
+    Node* prev = nullptr;
+    
+    while (current != nullptr) {
+        if (current->data.id == activityId) {
             // Store in permanent delete stack for logging
-            permanentDeleteStack.push(*it);
+            permanentDeleteStack.push(current->data);
             
             // Remove from undo stack if present
             stack<Activity> tempUndoStack;
@@ -141,11 +223,22 @@ void permanentDeleteActivity(string activityId) {
                 tempRedoStack.pop();
             }
             
-            // Permanently remove from activities
-            cout << "🔥 PERMANENT DELETE: " << activityId << " - " << it->title << " (CANNOT BE UNDONE)" << endl;
-            activities.erase(it);
+            // Permanently remove from linked list
+            if (prev == nullptr) {
+                head = current->next;
+            } else {
+                prev->next = current->next;
+            }
+            
+            cout << "🔥 PERMANENT DELETE: " << activityId << " - " << current->data.title << " (CANNOT BE UNDONE)" << endl;
+            addNotification("PERMANENT DELETE: " + current->data.title, "PERMANENT_DELETE", activityId);
+            
+            delete current;
+            activityCount--;
             return;
         }
+        prev = current;
+        current = current->next;
     }
     cout << "❌ PERMANENT DELETE FAILED: Activity not found - " << activityId << endl;
 }
@@ -162,8 +255,14 @@ void undoDelete() {
     
     redoStack.push(lastDeleted);
     
-    activities.push_back(lastDeleted);
+    // Add back to linked list
+    Node* newNode = new Node(lastDeleted);
+    newNode->next = head;
+    head = newNode;
+    activityCount++;
+    
     cout << "↩️  UNDO DELETE: " << lastDeleted.title << " restored" << endl;
+    addNotification("Undo delete: " + lastDeleted.title + " restored", "UNDO_DELETE", lastDeleted.id);
 }
 
 // Redo delete
@@ -176,31 +275,44 @@ void redoDelete() {
     Activity lastUndone = redoStack.top();
     redoStack.pop();
     
-    bool found = false;
-    for (auto it = activities.begin(); it != activities.end(); ++it) {
-        if (it->id == lastUndone.id) {
-            undoStack.push(*it);
-            activities.erase(it);
-            found = true;
+    Node* current = head;
+    Node* prev = nullptr;
+    
+    while (current != nullptr) {
+        if (current->data.id == lastUndone.id) {
+            undoStack.push(current->data);
+            
+            if (prev == nullptr) {
+                head = current->next;
+            } else {
+                prev->next = current->next;
+            }
+            
             cout << "↪️  REDO DELETE: " << lastUndone.title << " deleted again" << endl;
-            break;
+            addNotification("Redo delete: " + lastUndone.title + " deleted again", "REDO_DELETE", lastUndone.id);
+            
+            delete current;
+            activityCount--;
+            return;
         }
+        prev = current;
+        current = current->next;
     }
     
-    if (!found) {
-        cout << "⚠️  Activity not found for redo: " << lastUndone.title << endl;
-    }
+    cout << "⚠️  Activity not found for redo: " << lastUndone.title << endl;
 }
 
 // Display all activities
 void displayActivities() {
-    cout << "\n📋 TOTAL ACTIVITIES: " << activities.size() << endl;
+    cout << "\n📋 TOTAL ACTIVITIES: " << activityCount << endl;
     cout << "════════════════════════════════════════\n";
     
-    for (const auto& act : activities) {
-        cout << "ID: " << act.id << " | " << act.title 
-             << " [" << act.category << ", " << act.priority 
-             << ", Score: " << act.score << "]" << endl;
+    Node* current = head;
+    while (current != nullptr) {
+        cout << "ID: " << current->data.id << " | " << current->data.title 
+             << " [" << current->data.category << ", " << current->data.priority 
+             << ", Score: " << current->data.score << "]" << endl;
+        current = current->next;
     }
     
     cout << "\n📊 STACK STATS:" << endl;
@@ -208,6 +320,9 @@ void displayActivities() {
     cout << "↪️  REDO DELETE STACK: " << redoStack.size() << " items" << endl;
     cout << "📝 UPDATE UNDO STACK: " << updateUndoStack.size() << " items" << endl;
     cout << "🔥 PERMANENT DELETED: " << permanentDeleteStack.size() << " items" << endl;
+    
+    cout << "\n📋 QUEUE STATS:" << endl;
+    cout << "📨 NOTIFICATION QUEUE: " << notificationQueue.size() << " pending notifications" << endl;
     
     // Show permanently deleted activities
     if (!permanentDeleteStack.empty()) {
@@ -220,22 +335,62 @@ void displayActivities() {
     }
 }
 
+// Display queue
+void displayQueue() {
+    cout << "\n📨 NOTIFICATION QUEUE (" << notificationQueue.size() << " pending):" << endl;
+    cout << "════════════════════════════════════════\n";
+    
+    if (notificationQueue.empty()) {
+        cout << "Queue is empty!" << endl;
+        return;
+    }
+    
+    // Create a temporary queue to display without losing data
+    queue<Notification> tempQueue = notificationQueue;
+    int count = 1;
+    
+    while (!tempQueue.empty()) {
+        Notification notif = tempQueue.front();
+        cout << count++ << ". [" << notif.timestamp << "] ";
+        cout << "[" << notif.type << "] ";
+        cout << notif.message << endl;
+        tempQueue.pop();
+    }
+    cout << "════════════════════════════════════════\n";
+}
+
+// Cleanup function to free memory
+void cleanupLinkedList() {
+    while (head != nullptr) {
+        Node* temp = head;
+        head = head->next;
+        delete temp;
+    }
+}
+
 int main(int argc, char* argv[]) {
     
     cout << "\n═══════════════════════════════════════════════════\n";
     cout << "           TASKPULSE - ACTIVITY MANAGER           \n";
     cout << "═══════════════════════════════════════════════════\n";
     cout << "Time: " << getCurrentTime() << endl;
+    cout << "Data Structures: Linked List + Stacks + Queue\n";
+    cout << "═══════════════════════════════════════════════════\n";
     
     if (argc < 2) {
         cout << "\nCommands:\n";
         cout << "  add \"ID\" \"Title\" \"Category\" \"Priority\" \"Score\" \"Description\" \"Status\" \"UserID\"\n";
         cout << "  update \"ID\" \"NewTitle\" \"NewCategory\" \"NewPriority\" \"NewScore\" \"NewDesc\" \"NewStatus\" \"UserID\" \"OldTitle\" \"OldCategory\" \"OldPriority\" \"OldScore\" \"OldDesc\" \"OldStatus\"\n";
         cout << "  delete \"ActivityID\"\n";
-        cout << "  permanent-delete \"ActivityID\"\n";  // 🔥 NEW COMMAND
+        cout << "  permanent-delete \"ActivityID\"\n";
         cout << "  undo\n";
         cout << "  redo\n";
         cout << "  display\n";
+        cout << "  queue           # Show pending notifications\n";
+        cout << "  process-queue   # Process all notifications (FIFO)\n";
+        
+        // Cleanup before exit
+        cleanupLinkedList();
         return 0;
     }
     
@@ -300,15 +455,25 @@ int main(int argc, char* argv[]) {
     } else if (command == "display") {
         displayActivities();
         
+    } else if (command == "queue") {
+        displayQueue();
+        
+    } else if (command == "process-queue") {
+        processNotifications();
+        
     } else {
         cout << "❌ INVALID COMMAND" << endl;
     }
     
-    cout << "\n📊 STATS - Activities: " << activities.size() 
+    cout << "\n📊 STATS - Activities: " << activityCount 
          << " | Undo Stack: " << undoStack.size() 
          << " | Redo Stack: " << redoStack.size() 
+         << " | Queue: " << notificationQueue.size() 
          << " | Permanent Deleted: " << permanentDeleteStack.size() << endl;
     cout << "═══════════════════════════════════════════════════\n\n";
+    
+    // Cleanup before exit
+    cleanupLinkedList();
     
     return 0;
 }
