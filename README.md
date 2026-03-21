@@ -1,76 +1,124 @@
-# 📋 TASKPULSE - Smart Activity Management System
+# 📋 TASKPULSE — Smart Activity Management System 🚀
 
-TaskPulse is a full-stack activity management system that integrates **C++ data structures** (Linked List, Stacks, Queue) with **Supabase database** and **Node.js backend** to demonstrate practical implementation of DSA concepts in real-world applications.
+<p align="center">
+  <img src="https://i.pinimg.com/736x/e0/1b/a8/e01ba8272fe87fd1698bc6d026752159.jpg" />
+</p>
 
----
-
-## 👥 TEAM MEMBERS
-
-| No | Name | Role |
-|----|------|------|
-| 01 | **Muhammad Irtiza Khan** | accompained in all aspect |
-| 02 | **Saad Pervaiz** | accompained in all aspect |
-| 03 | **Ali Yaqoob Khan** | accompained in all aspect |
+<p align="center">
+  ⚙️ Data Structures • 📊 Task Management • 🚀 Real-World Implementation
+</p>
 
 ---
 
-## 🌟 UNIQUENESS OF TASKPULSE
+## 🚀 Badges 🏷️
 
-| # | Uniqueness | Description |
-|---|------------|-------------|
-| 1 | **C++ as Live Backend Engine** | Most projects use only databases; TaskPulse uses C++ for actual DSA processing |
-| 2 | **DSA-Focused Architecture** | Demonstrates role of data structures beyond basic CRUD operations |
-| 3 | **Real Undo/Redo Logic** | Implements stack-based undo/redo (like Ctrl+Z in real applications) |
-| 4 | **Low-Level Integration** | Connects C++ with modern web technologies (Node.js + Supabase) |
-| 5 | **Educational Value** | Bridges gap between theoretical DSA concepts and practical implementation |
-
----
-
-## 🌍 REAL-WORLD APPLICATIONS
-
-| # | Application | Use Case |
-|---|-------------|----------|
-| 1 | **Personal Task Management** | Daily to-do lists, deadlines tracking |
-| 2 | **Educational Institutions** | Assignment submission, project tracking |
-| 3 | **Small Businesses** | Inventory management, customer support tickets |
-| 4 | **Healthcare Systems** | Patient appointment scheduling |
-| 5 | **Team Collaboration** | Project management like Trello/Asana |
+<p align="center">
+  <img src="https://img.shields.io/badge/Frontend-HTML%20%7C%20CSS%20%7C%20JS-orange?style=for-the-badge&logo=html5" />
+  <img src="https://img.shields.io/badge/Backend-Node.js-green?style=for-the-badge&logo=node.js" />
+  <img src="https://img.shields.io/badge/Database-Supabase-blue?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/DSA-C%2B%2B-00599C?style=for-the-badge&logo=cplusplus" />
+  <img src="https://img.shields.io/badge/Auth-Firebase-yellow?style=for-the-badge" />
+</p>
 
 ---
 
-## ⚠️ CURRENT LIMITATIONS
+## 📋 Overview 📖
+**TASKPULSE** is a full-stack **activity management system** that uniquely integrates **C++ Data Structures** with modern web technologies.  
 
-| # | Limitation | Description |
-|---|------------|-------------|
-| 1 | **Local Host Only** | Currently runs on localhost (http://localhost:3000) |
-| 2 | **Not Deployed Yet** | Application is not deployed on any cloud platform |
-| 3 | **Manual Setup Required** | Users need to configure their own Supabase credentials |
-| 4 | **C++ Compiler Needed** | Requires g++ compiler on local machine |
-
----
-
-## 🚀 FUTURE PLANS
-
-- Deploy on cloud platforms (AWS, Render, DigitalOcean)
-- Containerize using Docker
-- Add more data structures (Trees, Graphs)
+💡 It demonstrates:
+- ⚙️ Practical DSA implementation  
+- 🌐 Real-world system design  
+- 🔗 Integration of low-level & high-level technologies  
 
 ---
 
-## 🛠️ TECH STACK
+## 👥 Team Members 🧑‍🤝‍🧑
 
-- **Frontend:** HTML, CSS, JavaScript, Firebase Auth
-- **Backend:** Node.js, Express.js
-- **Database:** Supabase (PostgreSQL)
-- **DSA Layer:** C++ (STL - Linked List, Stacks, Queue)
+| 👤 Name | 🎯 Role |
+|--------|--------|
+| **Muhammad Irtiza Khan** | Full Contribution |
+| **Saad Pervaiz** | Full Contribution |
+| **Ali Yaqoob Khan** | Full Contribution |
 
 ---
 
-## 📥 INSTALLATION
+## 🌟 Uniqueness 💎
+
+- 🧠 C++ as live backend engine (DSA execution)  
+- ⚙️ Real implementation of Linked List, Stack, Queue  
+- 🔄 Stack-based Undo/Redo system  
+- 🔗 Low-level + modern web integration  
+- 🎓 Strong educational & practical value  
+
+---
+
+## 🌍 Real-World Applications 🌐
+
+- 📋 Personal task management  
+- 🎓 Academic project tracking  
+- 🏢 Small business workflows  
+- 🏥 Appointment scheduling systems  
+- 👥 Team collaboration tools  
+
+---
+
+## ⚠️ Current Limitations 🚧
+
+- 💻 Runs on localhost only  
+- 🌐 Not deployed yet  
+- 🔑 Requires manual Supabase setup  
+- ⚙️ Needs C++ compiler (g++)  
+
+---
+
+## 🚀 Future Plans 🔮
+
+- ☁️ Cloud deployment (AWS / Render / DigitalOcean)  
+- 📦 Docker containerization  
+- 🌳 Add Trees & Graphs  
+- 📊 Advanced analytics dashboard  
+
+---
+
+## 🛠️ Tech Stack ⚙️
+
+### 🎨 Frontend
+- 🧱 HTML  
+- 🎨 CSS  
+- ⚡ JavaScript  
+- 🔐 Firebase Auth  
+
+### 🖥️ Backend
+- 🟢 Node.js  
+- ⚙️ Express.js  
+
+### 🗄️ Database
+- 🐘 Supabase (PostgreSQL)  
+
+### 🧠 DSA Layer
+- 💻 C++ (Linked List, Stack, Queue - STL)  
+
+---
+## 🎯 Project Purpose & Author 🎓
+
+This project was built to:
+
+- 🧠 Apply DSA concepts in real-world systems  
+- ⚡ Strengthen backend & system design skills  
+- 🔗 Integrate C++ with modern web technologies  
+- 🚀 Build industry-level logic systems  
+
+**👨‍💻 Author:** Muhammad Irtiza Khan  
+
+**⭐ Support:** If you like this project, give it a ⭐ on GitHub!
+---
+## 📥 Installation 🧑‍💻
 
 ```bash
 # Clone repository
 git clone https://github.com/muhmmmadirtizakhan/Taskpulse.git
+
+# Navigate to folder
 cd Taskpulse
 
 # Install dependencies
@@ -82,5 +130,8 @@ g++ -o taskpulse taskpulse.cpp
 # Run server
 node server.js
 
-# Access application
+# Open in browser
 http://localhost:3000
+
+
+
